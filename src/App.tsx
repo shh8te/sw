@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
 import { Main } from "pages/main";
 import { Character } from "pages/character";
 import { API_ROUTES } from "config";
