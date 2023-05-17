@@ -10,7 +10,7 @@ import {
   selectCharactersState,
   selectMergedCharacters,
 } from "store/characters/selectors";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "store";
 import { API_SEARCH_INPUT_DELAY } from "config";
 import { useDebounce } from "./useDebounce";
@@ -22,48 +22,25 @@ export const useCharacterList = () => {
   const { loading, error, showNextPage, showPrevPage, list } = useSelector(
     selectCharactersState
   );
-  const [searchQuery, setSearchQuery] = useState(query);
-  const [currentPage, setCurrentPage] = useState(page);
-  const debouncedSearchQuery = useDebounce(searchQuery, API_SEARCH_INPUT_DELAY);
 
-  useEffect(() => {
-    if (!list) {
-      dispatch(fetchCharacterList({ page, query }));
+  useEffect(() => {}, [dispatch, query, page]);
 
-      return;
-    }
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      dispatch(setQuery(query));
+      if (page > 1) dispatch(setPage(1));
+    },
+    // To avoid issue related to pagination
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch]
+  );
 
-    if (query !== debouncedSearchQuery) {
-      setCurrentPage(initialState.page); // reset page to view results from the beginning
-      dispatch(setQuery(debouncedSearchQuery));
-
-      return;
-    }
-
-    if (page !== currentPage) {
-      dispatch(setPage(currentPage));
-      dispatch(fetchCharacterList({ page: currentPage, query }));
-
-      return;
-    }
-  }, [
-    dispatch,
-    debouncedSearchQuery,
-    currentPage,
-    mergedCharacters,
-    query,
-    page,
-    list,
-  ]);
-
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-  };
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      dispatch(setPage(newPage));
+    },
+    [dispatch]
+  );
 
   return {
     mergedCharacters,
@@ -71,8 +48,6 @@ export const useCharacterList = () => {
     showPrevPage,
     loading,
     error,
-    currentPage,
-    searchQuery,
     handlePageChange,
     handleSearchChange,
   };

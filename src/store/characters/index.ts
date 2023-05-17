@@ -20,33 +20,19 @@ const initialState: CharactersState = {
   editedCharacters: {},
 };
 
-export const fetchCharacterList = createAsyncThunk(
-  "swapi/fetchPeople",
-  async ({ page, query }: { page: number; query: string }) => {
-    const url = new URL(`${API_BASE_URL}/people`);
-
-    if (query) {
-      url.searchParams.set("search", query);
-    }
-    if (page) {
-      url.searchParams.set("page", page.toString());
-    }
-
-    const response = await fetch(url);
-    const data: Data = await response.json();
-
-    return {
-      data: data.results,
-      showNextPage: !!data.next,
-      showPrevPage: !!data.previous,
-    };
-  }
-);
-
 const charactersSlice = createSlice({
   name: "characters",
   initialState,
   reducers: {
+    setCharacters: (state, action: PayloadAction<Person[]>) => {
+      state.list = action.payload.reduce((obj, character) => {
+        if (character) {
+          return Object.assign(obj, { [`${character.name}`]: character });
+        } else {
+          return {};
+        }
+      }, {});
+    },
     editCharacter: (
       state,
       action: PayloadAction<{ name: string; character: Person }>
@@ -54,30 +40,6 @@ const charactersSlice = createSlice({
       const { name, character } = action.payload;
       state.editedCharacters[name] = character;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchCharacterList.pending, (state) => {
-        state.loading = "pending";
-        state.error = null;
-      })
-      .addCase(fetchCharacterList.fulfilled, (state, action) => {
-        state.loading = "idle";
-        state.error = null;
-        state.list = action.payload.data.reduce((acc, character) => {
-          if (character) {
-            return Object.assign(acc, { [`${character.name}`]: character });
-          } else {
-            return {};
-          }
-        }, {});
-        state.showNextPage = action.payload.showNextPage;
-        state.showPrevPage = action.payload.showPrevPage;
-      })
-      .addCase(fetchCharacterList.rejected, (state, action) => {
-        state.loading = "idle";
-        state.error = action.error.message ?? "An error occurred";
-      });
   },
 });
 

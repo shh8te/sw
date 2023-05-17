@@ -14,6 +14,7 @@ import { makeStyles } from "@mui/styles";
 import { useCharacterList } from "hooks/useCharacterList";
 import { StyledLink } from "./styles";
 import { API_ROUTES } from "config";
+import { Search } from "components/Search";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -65,8 +66,8 @@ export const Main = () => {
     showNextPage,
     loading,
     error,
-    currentPage,
-    searchQuery,
+    // currentPage,
+    // searchQuery,
     handlePageChange,
     handleSearchChange,
   } = useCharacterList();
@@ -92,7 +93,7 @@ export const Main = () => {
 
   return (
     <div className={classes.root}>
-      <TextField
+      {/* <TextField
         id="main-search-input"
         className={classes.searchInput}
         label="Search"
@@ -100,7 +101,8 @@ export const Main = () => {
         value={searchQuery}
         onChange={handleSearchChange}
         fullWidth
-      />
+      /> */}
+      <Search setSearchQuery={handleSearchChange} />
       <Container maxWidth="md" className={classes.container}>
         <Grid container spacing={2}>
           {Object.keys(mergedCharacters)?.map((characterName, index) => (
