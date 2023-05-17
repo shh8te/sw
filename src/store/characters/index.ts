@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { API_BASE_URL } from "config";
-import { RootState } from "store";
 import { Data, Person } from "types";
 
 interface CharactersState {

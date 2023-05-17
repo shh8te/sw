@@ -93,6 +93,7 @@ export const Main = () => {
   return (
     <div className={classes.root}>
       <TextField
+        id="main-search-input"
         className={classes.searchInput}
         label="Search"
         variant="outlined"
@@ -102,14 +103,14 @@ export const Main = () => {
       />
       <Container maxWidth="md" className={classes.container}>
         <Grid container spacing={2}>
-          {Object.keys(mergedCharacters)?.map((characterName) => (
+          {Object.keys(mergedCharacters)?.map((characterName, index) => (
             <Grid key={characterName} item xs={12} sm={6} md={4} lg={3}>
               <StyledLink
                 to={API_ROUTES.CURRENT_CHARACTER(
                   encodeURIComponent(characterName)
                 )}
               >
-                <Card className={classes.characterCard}>
+                <Card id={`card-${index}`} className={classes.characterCard}>
                   <CardContent>
                     <Typography variant="h6" component="h3" gutterBottom>
                       {mergedCharacters[characterName].name}
@@ -125,10 +126,17 @@ export const Main = () => {
           ))}
         </Grid>
         <div className={classes.paginationContainer}>
-          <Typography variant="body1" className={classes.paginationText}>
+          <Typography
+            id="main-pagintaion-page"
+            variant="body1"
+            className={classes.paginationText}
+          >
             Page: {currentPage}
           </Typography>
-          <div className={classes.paginationButtons}>
+          <div
+            id="main-pagination-buttons"
+            className={classes.paginationButtons}
+          >
             <IconButton
               color="primary"
               disabled={!showPrevPage}
