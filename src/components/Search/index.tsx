@@ -1,20 +1,9 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import {
-  Grid,
-  TextField,
-  CircularProgress,
-  Typography,
-  Card,
-  CardContent,
-  Theme,
-  Container,
-  IconButton,
-} from "@mui/material";
+import { TextField, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useCharacterList } from "hooks/useCharacterList";
-import { API_ROUTES, API_SEARCH_INPUT_DELAY } from "config";
+import { API_SEARCH_INPUT_DELAY } from "config";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useDebounce } from "hooks/useDebounce";
+import { selectCharacterListState } from "store/characterList";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme: Theme) => ({
   searchInput: {
@@ -28,27 +17,24 @@ type Props = {
 
 export const Search = ({ setSearchQuery }: Props) => {
   const classes = useStyles();
-  const [searchValue, setSearchValue] = useState<string | undefined>(undefined);
-  const debouncedSearchValue = useDebounce(searchValue, API_SEARCH_INPUT_DELAY);
-  const {
-    mergedCharacters,
-    showPrevPage,
-    showNextPage,
-    loading,
-    error,
-    handlePageChange,
-    handleSearchChange,
-  } = useCharacterList();
+  const { query } = useSelector(selectCharacterListState);
+  const [searchValue, setSearchValue] = useState(query);
 
   const handleSearchValueChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
   };
 
   useEffect(() => {
-    if (debouncedSearchValue !== undefined) {
-      setSearchQuery(debouncedSearchValue);
+    if (searchValue !== query) {
+      const handler = setTimeout(() => {
+        setSearchQuery(searchValue);
+      }, API_SEARCH_INPUT_DELAY);
+
+      return () => {
+        clearTimeout(handler);
+      };
     }
-  }, [debouncedSearchValue, setSearchQuery]);
+  }, [query, searchValue, setSearchQuery]);
 
   return (
     <TextField

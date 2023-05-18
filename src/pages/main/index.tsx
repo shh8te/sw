@@ -15,15 +15,21 @@ import { useCharacterList } from "hooks/useCharacterList";
 import { StyledLink } from "./styles";
 import { API_ROUTES } from "config";
 import { Search } from "components/Search";
+import { Pagination } from "components/Pagination";
+import { useSelector } from "react-redux";
+import {
+  selectCharactersState,
+  selectMergedCharacters,
+} from "store/characters/selectors";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
     padding: theme.spacing(3),
   },
-  searchInput: {
-    marginBottom: theme.spacing(2),
-  },
+  // searchInput: {
+  //   marginBottom: theme.spacing(2),
+  // },
   loadingContainer: {
     display: "flex",
     justifyContent: "center",
@@ -40,40 +46,39 @@ const useStyles = makeStyles((theme: Theme) => ({
   characterCard: {
     height: "100%",
   },
-  paginationContainer: {
-    marginTop: theme.spacing(2),
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // paginationContainer: {
+  //   marginTop: theme.spacing(2),
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
-  paginationText: {
-    marginRight: theme.spacing(2),
-  },
-  paginationButtons: {
-    display: "flex",
-  },
+  // paginationText: {
+  //   marginRight: theme.spacing(2),
+  // },
+  // paginationButtons: {
+  //   display: "flex",
+  // },
 }));
 
 export const Main = () => {
   const classes = useStyles();
   const {
-    mergedCharacters,
-    showPrevPage,
-    showNextPage,
-    loading,
-    error,
-    // currentPage,
     // searchQuery,
+    page,
     handlePageChange,
     handleSearchChange,
   } = useCharacterList();
+  const { loading, error, showNextPage, showPrevPage } = useSelector(
+    selectCharactersState
+  );
+  const mergedCharacters = useSelector(selectMergedCharacters);
 
-  const handleNextPageClick = () => handlePageChange(currentPage + 1);
-  const handlePrevPageClick = () => handlePageChange(currentPage - 1);
+  // const handleNextPageClick = () => handlePageChange(page + 1);
+  // const handlePrevPageClick = () => handlePageChange(page - 1);
 
   if (loading === "pending") {
     return (
@@ -127,7 +132,7 @@ export const Main = () => {
             </Grid>
           ))}
         </Grid>
-        <div className={classes.paginationContainer}>
+        {/* <div className={classes.paginationContainer}>
           <Typography
             id="main-pagintaion-page"
             variant="body1"
@@ -154,7 +159,13 @@ export const Main = () => {
               <ChevronRight />
             </IconButton>
           </div>
-        </div>
+        </div> */}
+        <Pagination
+          currentPage={page}
+          showPrevPage={showPrevPage}
+          showNextPage={showNextPage}
+          onPageChange={handlePageChange}
+        />
       </Container>
     </div>
   );
