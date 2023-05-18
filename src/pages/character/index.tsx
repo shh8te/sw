@@ -8,47 +8,17 @@ import {
   Input,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useCharacter } from "hooks/useCharacter";
+import { useDispatch, useSelector } from "react-redux";
+import { Person } from "types";
+import { useState } from "react";
+import { RootState } from "store";
+import { useNavigate, useParams } from "react-router-dom";
+import { editCharacter } from "store/characters";
+import { selectCharacterByName } from "store/characters/selectors";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  searchInput: {
-    marginBottom: theme.spacing(2),
-  },
-  loadingContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 200,
-  },
-  errorContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 200,
-    color: theme.palette.error.main,
-  },
   characterCard: {
     height: "100%",
-  },
-  paginationContainer: {
-    marginTop: theme.spacing(2),
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paginationText: {
-    marginRight: theme.spacing(2),
-  },
-  paginationButtons: {
-    display: "flex",
   },
   backButton: {
     marginTop: theme.spacing(2),
@@ -61,16 +31,31 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const Character = () => {
-  const {
-    character,
-    isEdit,
-    editedName,
-    handleEdit,
-    handleGoBack,
-    handleInputNewName,
-    handleSaveClick,
-  } = useCharacter();
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const { name } = useParams();
+  const character = useSelector((state) =>
+    selectCharacterByName(state as RootState, name ?? "")
+  );
+  const navigate = useNavigate();
+  const [isEdit, setEdit] = useState(false);
+  const [editedName, setEditedName] = useState(character?.name ?? "");
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+  const handleEdit = () => {
+    setEdit(true);
+  };
+  const handleInputNewName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedName(event.target.value);
+  };
+  const handleSaveClick = () => {
+    setEdit(false);
+    const newCharacter = { ...character } as Person;
+    newCharacter.name = editedName;
+    dispatch(editCharacter({ name: `${name}`, character: newCharacter }));
+  };
 
   return (
     <Grid item key={character?.name} xs={12} sm={6} md={4} lg={3}>
@@ -94,7 +79,7 @@ export const Character = () => {
           <Typography variant="body2" color="textSecondary">
             Birth Year: {character?.birth_year}
           </Typography>
-          {/* Add more details here */}
+          {/* Add more details here if needed */}
           {isEdit ? (
             <Button
               variant="outlined"

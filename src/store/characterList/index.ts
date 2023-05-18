@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "store";
 
 export type CharacterListState = {
@@ -15,11 +15,15 @@ export const characterListSlice = createSlice({
   name: "characterList",
   initialState,
   reducers: {
-    setPage: (state, action) => {
-      state.page = action.payload;
-    },
-    setQuery: (state, action) => {
-      state.query = action.payload;
+    setParameters: (
+      state,
+      action: PayloadAction<{
+        page: number;
+        query: string;
+      }>
+    ) => {
+      state.page = action.payload.page;
+      state.query = action.payload.query;
     },
   },
 });
@@ -27,6 +31,6 @@ export const characterListSlice = createSlice({
 export const selectCharacterListState = (state: RootState) =>
   state.characterList;
 
-export const { setPage, setQuery } = characterListSlice.actions;
+export const { setParameters } = characterListSlice.actions;
 
 export default characterListSlice.reducer;
