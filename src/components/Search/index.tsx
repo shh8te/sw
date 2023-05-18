@@ -1,4 +1,3 @@
-import { TextField } from "@mui/material";
 import { API_SEARCH_INPUT_DELAY } from "config";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { selectCharacterListState, setParameters } from "store/characterList";

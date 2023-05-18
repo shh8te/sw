@@ -1,5 +1,5 @@
 import { styled as MUIStyled } from "@mui/material/styles";
-import { Card, Button } from "@mui/material";
+import { Card, Button, Box } from "@mui/material";
 
 export const CharacterDetailsCard = MUIStyled(Card)({
   height: "100%",
@@ -7,4 +7,12 @@ export const CharacterDetailsCard = MUIStyled(Card)({
 
 export const StyledButton = MUIStyled(Button)({
   margin: "20px 0",
+
+  ":not(:last-child)": {
+    marginRight: "20px",
+  },
+});
+
+export const ButtonsContainer = MUIStyled(Box)({
+  display: "flex",
 });

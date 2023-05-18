@@ -6,7 +6,7 @@ import { RootState } from "store";
 import { useNavigate, useParams } from "react-router-dom";
 import { editCharacter } from "store/characters";
 import { selectCharacterByName } from "store/characters/selectors";
-import { StyledButton, CharacterDetailsCard } from "./styles";
+import { StyledButton, CharacterDetailsCard, ButtonsContainer } from "./styles";
 
 export const Character = () => {
   const dispatch = useDispatch();
@@ -38,13 +38,6 @@ export const Character = () => {
     <Grid item key={character?.name} xs={12} sm={6} md={4} lg={3}>
       <CharacterDetailsCard>
         <CardContent>
-          <StyledButton
-            variant="outlined"
-            color="primary"
-            onClick={handleGoBack}
-          >
-            Back
-          </StyledButton>
           {isEdit ? (
             <Input value={editedName} onChange={handleInputNewName} />
           ) : (
@@ -56,23 +49,33 @@ export const Character = () => {
             Birth Year: {character?.birth_year}
           </Typography>
           {/* Add more details here if needed */}
-          {isEdit ? (
+          <ButtonsContainer>
             <StyledButton
               variant="outlined"
               color="primary"
-              onClick={handleSaveClick}
+              onClick={handleGoBack}
             >
-              Save
+              Back
             </StyledButton>
-          ) : (
-            <StyledButton
-              variant="outlined"
-              color="primary"
-              onClick={handleEdit}
-            >
-              Edit
-            </StyledButton>
-          )}
+            {isEdit ? (
+              <StyledButton
+                variant="outlined"
+                color="primary"
+                onClick={handleSaveClick}
+                disabled={!editedName.length}
+              >
+                Save
+              </StyledButton>
+            ) : (
+              <StyledButton
+                variant="outlined"
+                color="primary"
+                onClick={handleEdit}
+              >
+                Edit
+              </StyledButton>
+            )}
+          </ButtonsContainer>
         </CardContent>
       </CharacterDetailsCard>
     </Grid>

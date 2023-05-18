@@ -1,13 +1,5 @@
 import { useEffect } from "react";
-import {
-  Grid,
-  CircularProgress,
-  Typography,
-  Card,
-  CardContent,
-  Container,
-  Box,
-} from "@mui/material";
+import { Grid, CircularProgress, Typography, CardContent } from "@mui/material";
 import { API_BASE_URL, API_ROUTES } from "config";
 import { Search } from "components/Search";
 import { Pagination } from "components/Pagination";
