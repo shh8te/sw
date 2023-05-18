@@ -1,3 +1,4 @@
+This is a straightforward React app that allows you to view a list of Star Wars characters. You can also access detailed information about each character and have the ability to locally edit their names. The app utilizes Redux Toolkit (RTK) for data storage, Material-UI (MUI) along with Styled Components for styling and creating the user interface. Additionally, there are simple unit tests using Jest for utility functions and end-to-end (e2e) tests for the main page implemented with Cypress.
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
