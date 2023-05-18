@@ -1,19 +1,16 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { useEffect } from "react";
 import {
   Grid,
-  TextField,
   CircularProgress,
   Typography,
   Card,
   CardContent,
   Theme,
   Container,
-  IconButton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useCharacterList } from "hooks/useCharacterList";
 import { StyledLink } from "./styles";
-import { API_ROUTES } from "config";
+import { API_BASE_URL, API_ROUTES } from "config";
 import { Search } from "components/Search";
 import { Pagination } from "components/Pagination";
 import { useSelector } from "react-redux";
@@ -21,15 +18,17 @@ import {
   selectCharactersState,
   selectMergedCharacters,
 } from "store/characters/selectors";
+import { useAppDispatch } from "store";
+import { selectCharacterListState } from "store/characterList";
+import { deepCompareSimpleObjects } from "utils";
+import { setError, setLoading, setSuccess } from "store/characters";
+import { Data } from "types";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
     padding: theme.spacing(3),
   },
-  // searchInput: {
-  //   marginBottom: theme.spacing(2),
-  // },
   loadingContainer: {
     display: "flex",
     justifyContent: "center",
@@ -46,39 +45,67 @@ const useStyles = makeStyles((theme: Theme) => ({
   characterCard: {
     height: "100%",
   },
-  // paginationContainer: {
-  //   marginTop: theme.spacing(2),
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
-  // paginationText: {
-  //   marginRight: theme.spacing(2),
-  // },
-  // paginationButtons: {
-  //   display: "flex",
-  // },
 }));
 
 export const Main = () => {
+  const dispatch = useAppDispatch();
   const classes = useStyles();
-  const {
-    // searchQuery,
-    page,
-    handlePageChange,
-    handleSearchChange,
-  } = useCharacterList();
-  const { loading, error, showNextPage, showPrevPage } = useSelector(
+  const { loading, error, lastFetchedParameters } = useSelector(
     selectCharactersState
   );
   const mergedCharacters = useSelector(selectMergedCharacters);
+  const parameters = useSelector(selectCharacterListState);
 
-  // const handleNextPageClick = () => handlePageChange(page + 1);
-  // const handlePrevPageClick = () => handlePageChange(page - 1);
+  useEffect(() => {
+    if (!deepCompareSimpleObjects(lastFetchedParameters, parameters)) {
+      const fetchCharacters = async () => {
+        try {
+          dispatch(setLoading());
+
+          const url = new URL(`${API_BASE_URL}/people`);
+
+          if (parameters.query) {
+            url.searchParams.set("search", parameters.query);
+          }
+          if (parameters.page) {
+            url.searchParams.set("page", parameters.page.toString());
+          }
+
+          const response = await fetch(url);
+
+          if (response.ok) {
+            const data: Data = await response.json();
+
+            dispatch(
+              setSuccess({
+                list: data.results,
+                showNextPage: !!data.next,
+                showPrevPage: !!data.previous,
+                loading: "idle",
+                lastFetchedParameters: parameters,
+              })
+            );
+          }
+        } catch (error) {
+          console.error(
+            `An error occurred while fetching characters: ${error}`
+          );
+
+          dispatch(
+            setError({
+              error: `${error}`,
+            })
+          );
+        }
+      };
+
+      fetchCharacters();
+    }
+  }, [dispatch, lastFetchedParameters, parameters]);
 
   if (loading === "pending") {
     return (
@@ -98,16 +125,7 @@ export const Main = () => {
 
   return (
     <div className={classes.root}>
-      {/* <TextField
-        id="main-search-input"
-        className={classes.searchInput}
-        label="Search"
-        variant="outlined"
-        value={searchQuery}
-        onChange={handleSearchChange}
-        fullWidth
-      /> */}
-      <Search setSearchQuery={handleSearchChange} />
+      <Search />
       <Container maxWidth="md" className={classes.container}>
         <Grid container spacing={2}>
           {Object.keys(mergedCharacters)?.map((characterName, index) => (
@@ -125,47 +143,14 @@ export const Main = () => {
                     <Typography variant="body2" color="textSecondary">
                       Birth Year: {mergedCharacters[characterName].birth_year}
                     </Typography>
-                    {/* Add more details here */}
+                    {/* Add more details here if needed */}
                   </CardContent>
                 </Card>
               </StyledLink>
             </Grid>
           ))}
         </Grid>
-        {/* <div className={classes.paginationContainer}>
-          <Typography
-            id="main-pagintaion-page"
-            variant="body1"
-            className={classes.paginationText}
-          >
-            Page: {currentPage}
-          </Typography>
-          <div
-            id="main-pagination-buttons"
-            className={classes.paginationButtons}
-          >
-            <IconButton
-              color="primary"
-              disabled={!showPrevPage}
-              onClick={handlePrevPageClick}
-            >
-              <ChevronLeft />
-            </IconButton>
-            <IconButton
-              color="primary"
-              disabled={!showNextPage}
-              onClick={handleNextPageClick}
-            >
-              <ChevronRight />
-            </IconButton>
-          </div>
-        </div> */}
-        <Pagination
-          currentPage={page}
-          showPrevPage={showPrevPage}
-          showNextPage={showNextPage}
-          onPageChange={handlePageChange}
-        />
+        <Pagination />
       </Container>
     </div>
   );

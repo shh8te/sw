@@ -7,7 +7,10 @@ describe("Main Component", () => {
     cy.visit("http://localhost:3000");
 
     // Click the next page button
-    cy.get("#main-pagination-buttons button:last-child").click();
+    // wait up to 30 seconds for api answer if loaded
+    cy.get("#main-pagination-buttons button:last-child", {
+      timeout: 30000,
+    }).click();
 
     // Assert the page number has updated
     cy.get("#main-pagintaion-page").should("contain", "Page: 2");

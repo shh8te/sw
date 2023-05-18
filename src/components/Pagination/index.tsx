@@ -1,6 +1,11 @@
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Typography, Theme, IconButton } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useCallback } from "react";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "store";
+import { selectCharacterListState, setParameters } from "store/characterList";
+import { selectCharactersState } from "store/characters/selectors";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paginationContainer: {
@@ -17,23 +22,26 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-type Props = {
-  currentPage: number;
-  showPrevPage: boolean;
-  showNextPage: boolean;
-  onPageChange: (page: number) => void;
-};
-
-export const Pagination = ({
-  currentPage,
-  showNextPage,
-  showPrevPage,
-  onPageChange,
-}: Props) => {
+export const Pagination = () => {
+  const dispatch = useAppDispatch();
   const classes = useStyles();
+  const parameters = useSelector(selectCharacterListState);
+  const { showNextPage, showPrevPage } = useSelector(selectCharactersState);
 
-  const handleNextPageClick = () => onPageChange(currentPage + 1);
-  const handlePrevPageClick = () => onPageChange(currentPage - 1);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      dispatch(
+        setParameters({
+          ...parameters,
+          page: newPage,
+        })
+      );
+    },
+    [dispatch, parameters]
+  );
+
+  const handleNextPageClick = () => handlePageChange(parameters.page + 1);
+  const handlePrevPageClick = () => handlePageChange(parameters.page - 1);
 
   return (
     <div className={classes.paginationContainer}>
@@ -42,7 +50,7 @@ export const Pagination = ({
         variant="body1"
         className={classes.paginationText}
       >
-        Page: {currentPage}
+        Page: {parameters.page}
       </Typography>
       <div id="main-pagination-buttons" className={classes.paginationButtons}>
         <IconButton
