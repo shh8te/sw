@@ -1,20 +1,13 @@
-import { TextField, Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { TextField } from "@mui/material";
 import { API_SEARCH_INPUT_DELAY } from "config";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { selectCharacterListState, setParameters } from "store/characterList";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  searchInput: {
-    marginBottom: theme.spacing(2),
-  },
-}));
+import { SearchField } from "./styles";
 
 export const Search = () => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const { query } = useSelector(selectCharacterListState);
   const [searchValue, setSearchValue] = useState(query);
 
@@ -47,9 +40,8 @@ export const Search = () => {
   }, [query, searchValue, handleSearchChange]);
 
   return (
-    <TextField
+    <SearchField
       id="main-search-input"
-      className={classes.searchInput}
       label="Search"
       variant="outlined"
       value={searchValue}

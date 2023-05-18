@@ -5,11 +5,9 @@ import {
   Typography,
   Card,
   CardContent,
-  Theme,
   Container,
+  Box,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { StyledLink } from "./styles";
 import { API_BASE_URL, API_ROUTES } from "config";
 import { Search } from "components/Search";
 import { Pagination } from "components/Pagination";
@@ -23,37 +21,17 @@ import { selectCharacterListState } from "store/characterList";
 import { deepCompareSimpleObjects } from "utils";
 import { setError, setLoading, setSuccess } from "store/characters";
 import { Data } from "types";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  loadingContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 200,
-  },
-  errorContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 200,
-    color: theme.palette.error.main,
-  },
-  characterCard: {
-    height: "100%",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-}));
+import {
+  StyledLink,
+  CharacterCard,
+  ErrorContainer,
+  LoadingContainer,
+  MainContainer,
+  MainContent,
+} from "./styles";
 
 export const Main = () => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const { loading, error, lastFetchedParameters } = useSelector(
     selectCharactersState
   );
@@ -109,24 +87,24 @@ export const Main = () => {
 
   if (loading === "pending") {
     return (
-      <div className={classes.loadingContainer}>
+      <LoadingContainer component="div">
         <CircularProgress />
-      </div>
+      </LoadingContainer>
     );
   }
 
   if (error) {
     return (
-      <div className={classes.errorContainer}>
+      <ErrorContainer component="div">
         <Typography variant="body1">{error}</Typography>
-      </div>
+      </ErrorContainer>
     );
   }
 
   return (
-    <div className={classes.root}>
+    <MainContainer component="div">
       <Search />
-      <Container maxWidth="md" className={classes.container}>
+      <MainContent maxWidth="md">
         <Grid container spacing={2}>
           {Object.keys(mergedCharacters)?.map((characterName, index) => (
             <Grid key={characterName} item xs={12} sm={6} md={4} lg={3}>
@@ -135,7 +113,7 @@ export const Main = () => {
                   encodeURIComponent(characterName)
                 )}
               >
-                <Card id={`card-${index}`} className={classes.characterCard}>
+                <CharacterCard id={`card-${index}`}>
                   <CardContent>
                     <Typography variant="h6" component="h3" gutterBottom>
                       {mergedCharacters[characterName].name}
@@ -145,13 +123,13 @@ export const Main = () => {
                     </Typography>
                     {/* Add more details here if needed */}
                   </CardContent>
-                </Card>
+                </CharacterCard>
               </StyledLink>
             </Grid>
           ))}
         </Grid>
         <Pagination />
-      </Container>
-    </div>
+      </MainContent>
+    </MainContainer>
   );
 };

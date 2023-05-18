@@ -1,30 +1,18 @@
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Typography, Theme, IconButton } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { IconButton } from "@mui/material";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "store";
 import { selectCharacterListState, setParameters } from "store/characterList";
 import { selectCharactersState } from "store/characters/selectors";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  paginationContainer: {
-    marginTop: theme.spacing(2),
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  paginationText: {
-    marginRight: theme.spacing(2),
-  },
-  paginationButtons: {
-    display: "flex",
-  },
-}));
+import {
+  PaginationButtonsContainer,
+  PaginationContainer,
+  PaginationText,
+} from "./styles";
 
 export const Pagination = () => {
   const dispatch = useAppDispatch();
-  const classes = useStyles();
   const parameters = useSelector(selectCharacterListState);
   const { showNextPage, showPrevPage } = useSelector(selectCharactersState);
 
@@ -44,15 +32,11 @@ export const Pagination = () => {
   const handlePrevPageClick = () => handlePageChange(parameters.page - 1);
 
   return (
-    <div className={classes.paginationContainer}>
-      <Typography
-        id="main-pagintaion-page"
-        variant="body1"
-        className={classes.paginationText}
-      >
+    <PaginationContainer component="div">
+      <PaginationText id="main-pagintaion-page" variant="body1">
         Page: {parameters.page}
-      </Typography>
-      <div id="main-pagination-buttons" className={classes.paginationButtons}>
+      </PaginationText>
+      <PaginationButtonsContainer component="div" id="main-pagination-buttons">
         <IconButton
           color="primary"
           disabled={!showPrevPage}
@@ -67,7 +51,7 @@ export const Pagination = () => {
         >
           <ChevronRight />
         </IconButton>
-      </div>
-    </div>
+      </PaginationButtonsContainer>
+    </PaginationContainer>
   );
 };
